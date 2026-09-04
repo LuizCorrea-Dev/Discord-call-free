@@ -205,7 +205,10 @@ app.post('/api/token', async (req, res) => {
   try {
     const r = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+      },
       body: new URLSearchParams({
         client_id: DISCORD_CLIENT_ID,
         client_secret: DISCORD_CLIENT_SECRET,
@@ -213,6 +216,10 @@ app.post('/api/token', async (req, res) => {
         code,
       }),
     });
+
+    if (!r.ok && r.headers.get('content-type')?.includes('text/html')) {
+      throw new Error(`Cloudflare bloqueou o IP do Render (Status: ${r.status})`);
+    }
 
     const data = await r.json();
     if (!data.access_token) {
@@ -245,7 +252,10 @@ app.post('/api/session', async (req, res) => {
 
   try {
     const me = await fetch('https://discord.com/api/users/@me', {
-      headers: { Authorization: `Bearer ${access_token}` },
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+      },
     }).then((r) => r.json());
 
     if (!me?.id) return res.status(401).json({ error: 'token invalido' });
@@ -376,7 +386,10 @@ async function resolveGuildName(guildId) {
   let name = null;
   try {
     const response = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
-      headers: { Authorization: `Bot ${DISCORD_BOT_TOKEN}` },
+      headers: {
+        Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
+        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+      },
       signal: AbortSignal.timeout(5000),
     });
     const guild = response.ok ? await response.json() : null;
@@ -406,7 +419,10 @@ async function inVoiceChannel(guildId, channelId, userId) {
 
   try {
     const r = await fetch(`https://discord.com/api/v10/guilds/${guildId}/voice-states/${userId}`, {
-      headers: { Authorization: `Bot ${DISCORD_BOT_TOKEN}` },
+      headers: {
+        Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
+        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+      },
     });
 
     if (r.status === 404) {
@@ -479,6 +495,9 @@ app.get('/api/avatar/:id/:hash', async (req, res) => {
 
   try {
     const upstream = await fetch(`https://cdn.discordapp.com/avatars/${id}/${hash}.png?size=128`, {
+      headers: {
+        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+      },
       // O CDN fora do ar não pode virar uma sala que não abre.
       signal: AbortSignal.timeout(5000),
     });
@@ -708,7 +727,10 @@ app.get('/auth/callback', async (req, res) => {
   try {
     const token = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+      },
       body: new URLSearchParams({
         client_id: DISCORD_CLIENT_ID,
         client_secret: DISCORD_CLIENT_SECRET,
@@ -723,7 +745,10 @@ app.get('/auth/callback', async (req, res) => {
     }
 
     const me = await fetch('https://discord.com/api/users/@me', {
-      headers: { Authorization: `Bearer ${token.access_token}` },
+      headers: {
+        Authorization: `Bearer ${token.access_token}`,
+        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+      },
     }).then((r) => r.json());
 
     if (!me?.id) {
