@@ -1312,10 +1312,10 @@ button {
 
   .grid.palco {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 140px;
   }
 
-  .grid.palco .divider,
-  .grid.palco .sidebar {
+  .grid.palco .divider {
     display: none;
   }
 

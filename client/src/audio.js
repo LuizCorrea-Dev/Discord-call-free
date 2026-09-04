@@ -18,7 +18,7 @@
 
 // Colchão contra o solavanco da rede. Abaixo disso qualquer atraso vira
 // silêncio audível; muito acima, o som descola visivelmente da imagem.
-const COLCHAO = 0.08;
+const COLCHAO = 0.4; // 400ms absorve bem a oscilação da rede (antes era 0.08)
 
 // Teto do atraso acumulado. Quando a fila passa disso, o som já não acompanha
 // a tela e continuar empilhando só piora — melhor um corte e voltar ao vivo.
