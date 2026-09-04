@@ -11,6 +11,30 @@ import { signToken, verifyToken } from './tokens.js';
 import * as R from './rooms.js';
 import { systemSnapshot, startSampling } from './system.js';
 import { buildAdminDashboard } from './admin.js';
+import https from 'node:https';
+
+function fetchDiscord(urlStr, options = {}) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(urlStr);
+    const { method = 'GET', headers = {}, body } = options;
+    const req = https.request(url, { method, headers }, (res) => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => {
+        const raw = Buffer.concat(chunks).toString();
+        resolve({
+          ok: res.statusCode >= 200 && res.statusCode < 300,
+          status: res.statusCode,
+          headers: { get: (k) => res.headers[k?.toLowerCase()] || null },
+          json: async () => JSON.parse(raw),
+        });
+      });
+    });
+    req.on('error', reject);
+    if (body) req.write(body.toString());
+    req.end();
+  });
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
@@ -203,7 +227,7 @@ app.post('/api/token', async (req, res) => {
   }
 
   try {
-    const r = await fetch('https://discord.com/api/oauth2/token', {
+    const r = await fetchDiscord('https://discord.com/api/oauth2/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -725,7 +749,7 @@ app.get('/auth/callback', async (req, res) => {
   if (!code) return res.redirect(adminFlow ? '/admin?error=sem_codigo' : '/?erro=sem_codigo');
 
   try {
-    const token = await fetch('https://discord.com/api/oauth2/token', {
+    const token = await fetchDiscord('https://discord.com/api/oauth2/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
