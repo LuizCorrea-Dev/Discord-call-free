@@ -18,11 +18,11 @@
 
 // Colchão contra o solavanco da rede. Abaixo disso qualquer atraso vira
 // silêncio audível; muito acima, o som descola visivelmente da imagem.
-const COLCHAO = 0.4; // 400ms absorve bem a oscilação da rede (antes era 0.08)
+const COLCHAO = 0.6; // 600ms
 
 // Teto do atraso acumulado. Quando a fila passa disso, o som já não acompanha
 // a tela e continuar empilhando só piora — melhor um corte e voltar ao vivo.
-const ATRASO_MAXIMO = COLCHAO * 4;
+const ATRASO_MAXIMO = COLCHAO * 5;
 
 export function createAudio({ onError, volume = 1 } = {}) {
   let ctx = null;
@@ -117,7 +117,7 @@ export function createAudio({ onError, volume = 1 } = {}) {
 
     // O navegador pode ter criado o contexto suspenso; assistir foi um clique,
     // então retomar aqui é legítimo e não esbarra na política de autoplay.
-    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    if (ctx.state === 'suspended') ctx.resume().catch(() => { });
   }
 
   /**
@@ -141,7 +141,7 @@ export function createAudio({ onError, volume = 1 } = {}) {
     }
     decoder = null;
 
-    ctx?.close().catch(() => {});
+    ctx?.close().catch(() => { });
     ctx = null;
     ganho = null;
     proximo = 0;
