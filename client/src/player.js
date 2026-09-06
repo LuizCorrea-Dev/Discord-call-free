@@ -66,6 +66,7 @@ const PASSO_MAX_MS = 15;
 
   let decoder = null;
   let needKeyframe = true;
+  let lastKeyframeReq = 0;
   let lastLagMs = 0;
   let framesDrawn = 0;
   let pacotesVideoLog = 0;
@@ -132,7 +133,14 @@ const PASSO_MAX_MS = 15;
     const isKeyframe = view.getUint8(1) === 1;
 
     // Decoder frio só aceita keyframe; deltas antes disso viram erro.
-    if (needKeyframe && !isKeyframe) return;
+    if (needKeyframe && !isKeyframe) {
+      const agora = performance.now();
+      if (agora - lastKeyframeReq > 1000) {
+        lastKeyframeReq = agora;
+        onNeedKeyframe?.();
+      }
+      return;
+    }
 
     const timestamp = view.getFloat64(2);
     const sentAt = view.getFloat64(10);
@@ -309,6 +317,7 @@ const PASSO_MAX_MS = 15;
     }
     decoder = null;
     needKeyframe = true;
+    lastKeyframeReq = 0;
     lastLagMs = 0;
     esvaziar();
     base = null;
