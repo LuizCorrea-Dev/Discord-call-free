@@ -56,13 +56,8 @@ const AJUSTE_MS = 2000;
 /** Correção máxima por ajuste: acima disso a mudança de ritmo se vê. */
 const PASSO_MAX_MS = 15;
 
-  export function createPlayer(canvas, { onError, onTamanho, onNeedKeyframe } = {}) {
-  const stage = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(canvas.width, canvas.height) : canvas;
-  const stageCtx = stage.getContext('2d', {
-    alpha: false,
-    desynchronized: true,
-    willReadFrequently: false,
-  });
+export function createPlayer(canvas, { onError, onTamanho, onNeedKeyframe } = {}) {
+  const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 
   let decoder = null;
   let needKeyframe = true;
