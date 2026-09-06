@@ -56,8 +56,13 @@ const AJUSTE_MS = 2000;
 /** Correção máxima por ajuste: acima disso a mudança de ritmo se vê. */
 const PASSO_MAX_MS = 15;
 
-export function createPlayer(canvas, { onError, onTamanho } = {}) {
-  const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
+  export function createPlayer(canvas, { onError, onTamanho, onNeedKeyframe } = {}) {
+  const stage = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(canvas.width, canvas.height) : canvas;
+  const stageCtx = stage.getContext('2d', {
+    alpha: false,
+    desynchronized: true,
+    willReadFrequently: false,
+  });
 
   let decoder = null;
   let needKeyframe = true;
@@ -103,6 +108,7 @@ export function createPlayer(canvas, { onError, onTamanho } = {}) {
         // pedir um keyframe recupera sem derrubar a sessão.
         console.warn('[decoder]', err.message);
         needKeyframe = true;
+        onNeedKeyframe?.();
       },
     });
 
@@ -135,6 +141,15 @@ export function createPlayer(canvas, { onError, onTamanho } = {}) {
     pacotesVideoLog++;
     if (pacotesVideoLog % 30 === 0) {
       console.log(`[Rastreio Cliente] Vídeo recebido. tipo=${isKeyframe ? 'key' : 'delta'}, sentAt=${sentAt}, lag_ponta_a_ponta=${Math.round(lastLagMs)}ms`);
+    }
+
+    // Se o decodificador está engasgando, descartar o quadro e pedir um novo recomeço.
+    // Isso evita o acúmulo de buffer (e consequente atraso infinito) em computadores mais lentos.
+    if (decoder.decodeQueueSize > 5) {
+      console.warn(`[decoder] Fila muito grande (${decoder.decodeQueueSize}). Descartando quadro e pedindo keyframe.`);
+      needKeyframe = true;
+      onNeedKeyframe?.();
+      return;
     }
 
     try {

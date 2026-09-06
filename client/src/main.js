@@ -940,6 +940,7 @@ function openStream(slot, userId) {
         s.started = true;
         renderGrid();
       },
+      onNeedKeyframe: () => ws?.send(JSON.stringify({ type: 'need-keyframe', slot })),
     }),
     // Só nasce quando a transmissão anuncia que tem som — nem toda tem.
     audio: null,

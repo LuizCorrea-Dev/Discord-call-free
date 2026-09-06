@@ -1128,6 +1128,11 @@ function handleViewer(ws, room, auth) {
       return;
     }
 
+    if (msg.type === 'need-keyframe' && Number.isInteger(msg.slot)) {
+      R.needKeyframe(room, ws, msg.slot);
+      return;
+    }
+
     // Envelope de sinalização a caminho de quem transmite. O servidor não abre:
     // offer, answer e candidato só fazem sentido para as duas pontas.
     if (msg.type === 'rtc' && Number.isInteger(msg.slot) && msg.payload) {

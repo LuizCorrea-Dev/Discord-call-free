@@ -847,6 +847,16 @@ export function unwatch(room, ws, slot) {
   broadcastState(room);
 }
 
+export function needKeyframe(room, ws, slot) {
+  const entry = room.slots.get(slot);
+  if (!entry || !ws.__watching?.has(slot)) return;
+  // O cliente (espectador) relatou que seu decodificador está engasgando.
+  // Pede urgentemente um keyframe para o transmissor, ignorando o limitador
+  // de tempo regular, para que o cliente consiga limpar sua fila de quadros
+  // e reestabelecer o tempo real.
+  requestKeyframe(entry, { urgente: true });
+}
+
 // ------------------------------------------------------------------- WebRTC
 
 /**
