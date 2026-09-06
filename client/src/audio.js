@@ -31,6 +31,7 @@ export function createAudio({ onError, volume = 1 } = {}) {
   let proximo = 0;
   let nivel = volume;
   let tocou = false;
+  let pacotesAudioLog = 0;
 
   function start(config) {
     stop();
@@ -76,6 +77,14 @@ export function createAudio({ onError, volume = 1 } = {}) {
     if (!decoder || decoder.state !== 'configured') return;
 
     const view = new DataView(buffer);
+    
+    pacotesAudioLog++;
+    if (pacotesAudioLog % 50 === 0) {
+      const sentAt = view.getFloat64(10);
+      const lagMs = Date.now() - sentAt;
+      console.log(`[Rastreio Cliente] Áudio recebido. sentAt=${sentAt}, lag_ponta_a_ponta=${Math.round(lagMs)}ms`);
+    }
+
     try {
       decoder.decode(
         new EncodedAudioChunk({

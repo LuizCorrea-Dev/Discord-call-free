@@ -715,6 +715,13 @@ export function pushChunk(room, entry, chunk) {
     // Áudio não depende de keyframe — cada pacote Opus se decodifica sozinho —,
     // então não passa pelo controle de "já recebeu ponto de partida".
     if (isAudio) {
+      entry.pacotesAudioLog = (entry.pacotesAudioLog || 0) + 1;
+      if (entry.pacotesAudioLog % 50 === 0) {
+        // chunk em Node.js WebSocket é um Buffer. setFloat64() sem 3º arg é BigEndian
+        const sentAt = chunk.readDoubleBE(10);
+        console.log(`[Rastreio Servidor] Áudio repassado. sentAt=${sentAt}, lag_transmissor_servidor=${Date.now() - sentAt}ms`);
+      }
+
       if (v.bufferedAmount > MAX_BUFFERED_BYTES) {
         room.droppedChunks++;
         entry.droppedChunks++;
@@ -725,6 +732,12 @@ export function pushChunk(room, entry, chunk) {
       sentCopies++;
       v.__mediaBytesOut = (v.__mediaBytesOut ?? 0) + bytes;
       continue;
+    }
+
+    entry.pacotesVideoLog = (entry.pacotesVideoLog || 0) + 1;
+    if (entry.pacotesVideoLog % 30 === 0) {
+      const sentAt = chunk.readDoubleBE(10);
+      console.log(`[Rastreio Servidor] Vídeo repassado. tipo=${isKeyframe ? 'key' : 'delta'}, sentAt=${sentAt}, lag_transmissor_servidor=${Date.now() - sentAt}ms`);
     }
 
     if (isKeyframe) {

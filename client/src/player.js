@@ -63,6 +63,7 @@ export function createPlayer(canvas, { onError, onTamanho } = {}) {
   let needKeyframe = true;
   let lastLagMs = 0;
   let framesDrawn = 0;
+  let pacotesVideoLog = 0;
 
   // Quadros decodificados esperando a hora de aparecer, em ordem de exibição.
   const fila = [];
@@ -130,6 +131,11 @@ export function createPlayer(canvas, { onError, onTamanho } = {}) {
     const timestamp = view.getFloat64(2);
     const sentAt = view.getFloat64(10);
     lastLagMs = Date.now() - sentAt;
+
+    pacotesVideoLog++;
+    if (pacotesVideoLog % 30 === 0) {
+      console.log(`[Rastreio Cliente] Vídeo recebido. tipo=${isKeyframe ? 'key' : 'delta'}, sentAt=${sentAt}, lag_ponta_a_ponta=${Math.round(lastLagMs)}ms`);
+    }
 
     try {
       decoder.decode(

@@ -771,8 +771,8 @@ export function createBroadcaster({
     }
     framesEntrada++;
 
-    // Backpressure com histerese: entra em apuros com a fila acima de 2 e só
-    // sai quando ela desce a 1.
+    // Backpressure com histerese: entra em apuros com a fila acima de 2 (ou
+    // buffer do WebSocket alto) e só sai quando os dois esvaziam.
     //
     // A histerese é o que separa uma taxa menor de uma taxa que balança. Com a
     // carga exatamente em cima do limite — que é onde 60 fps quase sempre fica
@@ -783,7 +783,11 @@ export function createBroadcaster({
     // Vem antes do ritmo de propósito: quadro que o encoder não tem como
     // receber não pode consumir uma marca da grade. Era esse detalhe que fazia
     // o descarte por fila mexer na régua do ritmo e derrubar a taxa junto.
-    if (encoder.encodeQueueSize > (afogado ? 1 : 2)) {
+    const filaWs = ws ? ws.bufferedAmount : 0;
+    const maxWs = 256 * 1024; // 256 KB de buffer máximo de saída
+    const tetoWs = afogado ? maxWs / 2 : maxWs;
+
+    if (encoder.encodeQueueSize > (afogado ? 1 : 2) || filaWs > tetoWs) {
       afogado = true;
       frame.close();
       return true;
@@ -928,6 +932,9 @@ export function createBroadcaster({
     bytes += buf.byteLength;
   }
 
+  let pacotesAudioLog = 0;
+  let pacotesVideoLog = 0;
+
   /**
    * [1B slot][1B tipo][8B timestamp][8B relógio de envio][payload]
    *
@@ -936,13 +943,27 @@ export function createBroadcaster({
    * vídeo compartilham o formato: o tipo é a única coisa que os distingue.
    */
   function empacotar(tipo, timestamp, data) {
+    const agora = Date.now();
     const buf = new ArrayBuffer(18 + data.byteLength);
     const view = new DataView(buf);
     view.setUint8(0, mySlot);
     view.setUint8(1, tipo);
     view.setFloat64(2, timestamp);
-    view.setFloat64(10, Date.now());
+    view.setFloat64(10, agora);
     new Uint8Array(buf, 18).set(data);
+    
+    if (tipo === TIPO_AUDIO) {
+      pacotesAudioLog++;
+      if (pacotesAudioLog % 50 === 0) {
+        console.log(`[Rastreio Broadcaster] Áudio gerado/enviado. sentAt=${agora}, bufferWs=${ws ? ws.bufferedAmount : 0}`);
+      }
+    } else {
+      pacotesVideoLog++;
+      if (pacotesVideoLog % 30 === 0) {
+        console.log(`[Rastreio Broadcaster] Vídeo gerado/enviado. tipo=${tipo === TIPO_KEYFRAME ? 'key' : 'delta'}, sentAt=${agora}, bufferWs=${ws ? ws.bufferedAmount : 0}`);
+      }
+    }
+
     return buf;
   }
 

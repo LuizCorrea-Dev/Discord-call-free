@@ -200,6 +200,7 @@ class SocketFalso {
     this.enviados = [];
     this.ouvintes = {};
     this.fechado = false;
+    this.bufferedAmount = 0;
     sockets.push(this);
   }
   addEventListener(evento, ouvinte) {
@@ -767,17 +768,24 @@ describe('quadros', () => {
     expect(HTMLCanvasElement.prototype.getContext).toHaveBeenCalled();
   });
 
-  it('empacota slot, tipo e carga no cabeçalho de 18 bytes', async () => {
+  it('empacota slot, tipo, timestamp, envio e carga no cabeçalho de 18 bytes', async () => {
     const { ws, encoder } = await comQuadro(quadro());
     ws.receber({ type: 'slot', slot: 3 });
 
+    const antes = Date.now();
     encoder.output(chunkFalso({ type: 'key', timestamp: 4242 }), {});
+    const depois = Date.now();
 
     const [buffer] = ws.binarios();
     const view = new DataView(buffer);
     expect(view.getUint8(0)).toBe(3);
     expect(view.getUint8(1)).toBe(1);
     expect(view.getFloat64(2)).toBe(4242);
+    
+    const sentAt = view.getFloat64(10);
+    expect(sentAt).toBeGreaterThanOrEqual(antes);
+    expect(sentAt).toBeLessThanOrEqual(depois);
+
     expect(buffer.byteLength).toBe(18 + CARGA.length);
     expect([...new Uint8Array(buffer, 18)]).toEqual(CARGA);
   });
@@ -901,6 +909,21 @@ describe('ritmo de entrada', () => {
     await entregar(contexto, [0, 33.3]);
 
     expect(contexto.encoder.codificados).toHaveLength(4);
+  });
+
+  it('descarta o quadro na fonte se o buffer do socket passar de 256KB', async () => {
+    const contexto = await noAr({ fps: 30 });
+    
+    // Força um buffer cheio
+    contexto.ws.bufferedAmount = 300 * 1024;
+    
+    const frame = quadro(1280, 720, 0);
+    processadorDe(contexto.stream.getVideoTracks()[0]).empurrar(frame);
+    await respirar();
+
+    // Quadro descartado, não codificado
+    expect(contexto.encoder.codificados).toHaveLength(0);
+    expect(frame.fechado).toBe(true);
   });
 });
 
@@ -1226,7 +1249,7 @@ describe('som', () => {
     expect(capturas[0].audio).toBe(false);
   });
 
-  it('codifica e envia o som pelo mesmo socket, com tipo próprio', async () => {
+  it('codifica e envia o som pelo mesmo socket, com tipo próprio e timestamp', async () => {
     const stream = comSom('browser');
     const { ws } = await noAr({ audio: true }, stream);
     await respirar();
@@ -1234,10 +1257,20 @@ describe('som', () => {
 
     processadorDe(stream.getAudioTracks()[0]).empurrar(dados);
     await respirar();
+    
+    const antes = Date.now();
     audioEncoders.at(-1).output(chunkFalso());
+    const depois = Date.now();
 
     expect(dados.close).toHaveBeenCalled();
-    expect(new DataView(ws.binarios().at(-1)).getUint8(1)).toBe(3);
+    const buffer = ws.binarios().at(-1);
+    const view = new DataView(buffer);
+    
+    expect(view.getUint8(1)).toBe(3); // Tipo áudio
+    
+    const sentAt = view.getFloat64(10);
+    expect(sentAt).toBeGreaterThanOrEqual(antes);
+    expect(sentAt).toBeLessThanOrEqual(depois);
   });
 
   it('sem AudioEncoder no navegador, a tela continua no ar sem som', async () => {
