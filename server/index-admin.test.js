@@ -36,6 +36,9 @@ const base = `http://127.0.0.1:${server.address().port}`;
 let externas = [];
 const finge = (padrao, responder) => externas.push([padrao, responder]);
 
+import https from 'node:https';
+import { EventEmitter } from 'node:events';
+
 vi.stubGlobal('fetch', async (url, init) => {
   const alvo = String(url);
   for (const [padrao, responder] of externas) {
@@ -44,6 +47,37 @@ vi.stubGlobal('fetch', async (url, init) => {
   }
   if (alvo.startsWith(base)) return fetchReal(url, init);
   throw new Error(`chamada externa não prevista: ${alvo}`);
+});
+
+const reqOriginal = https.request;
+vi.spyOn(https, 'request').mockImplementation((url, options, cb) => {
+  const alvo = String(url);
+  for (const [padrao, responder] of externas) {
+    const bate = padrao instanceof RegExp ? padrao.test(alvo) : alvo.startsWith(padrao);
+    if (bate) {
+      const req = new EventEmitter();
+      const bodyData = [];
+      req.write = (chunk) => bodyData.push(chunk);
+      req.end = async () => {
+        try {
+          const body = bodyData.join('');
+          const resObj = await Promise.resolve(responder(alvo, { method: options.method, headers: options.headers, body }));
+          const resBody = await resObj.text();
+          
+          const res = new EventEmitter();
+          res.statusCode = resObj.status;
+          res.headers = Object.fromEntries(resObj.headers.entries());
+          cb(res);
+          res.emit('data', Buffer.from(resBody));
+          res.emit('end');
+        } catch (err) {
+          req.emit('error', err);
+        }
+      };
+      return req;
+    }
+  }
+  return reqOriginal(url, options, cb);
 });
 
 const json = (corpo, status = 200) =>
