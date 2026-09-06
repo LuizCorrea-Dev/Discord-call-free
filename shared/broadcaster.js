@@ -784,7 +784,7 @@ export function createBroadcaster({
     // receber não pode consumir uma marca da grade. Era esse detalhe que fazia
     // o descarte por fila mexer na régua do ritmo e derrubar a taxa junto.
     const filaWs = ws ? ws.bufferedAmount : 0;
-    const maxWs = 256 * 1024; // 256 KB de buffer máximo de saída
+    const maxWs = 64 * 1024; // 64 KB de buffer máximo de saída
     const tetoWs = afogado ? maxWs / 2 : maxWs;
 
     if (encoder.encodeQueueSize > (afogado ? 1 : 2) || filaWs > tetoWs) {

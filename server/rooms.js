@@ -31,7 +31,7 @@ export const FONTES = new Set(['tela', 'camera']);
 // Sala é objeto em memória criado por qualquer pessoa autenticada: sem teto,
 // um laço de "criar sala" consome a RAM do processo.
 const MAX_ROOMS_PER_INSTANCE = 20;
-const MAX_BUFFERED_BYTES = 2 * 1024 * 1024;
+const MAX_BUFFERED_BYTES = 128 * 1024;
 
 // Intervalo mínimo entre dois pedidos de keyframe para a mesma transmissão.
 const KEYFRAME_ASK_EVERY_MS = 1000;
