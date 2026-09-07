@@ -641,7 +641,7 @@ app.post('/api/rooms/join', (req, res) => {
   // motivo errado, já que o id dela vem do canal e não da instância.
   if (room.isCall) {
     if (room.id !== salaDaCall(me)) {
-      return res.status(403).json({ error: 'Entre na call para acessar esta sala.' });
+      return res.status(403).json({ error: 'Entre na call para acessar esta sala.', reason: 'not_in_call' });
     }
     return res.json(issueRoomTokens(room.id, me));
   }

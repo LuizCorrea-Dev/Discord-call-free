@@ -1575,6 +1575,10 @@ async function enterRoom(room, password) {
     });
     openRoom(tokens, room);
   } catch (err) {
+    if (err.status === 403 && err.reason === 'not_in_call') {
+      return toast(err.message, true);
+    }
+
     // 403 numa sala trancada é o caminho normal: pedir a senha.
     if (err.status === 403 && !password) return askPassword(room);
     if (err.status === 403) return askPassword(room, 'Senha incorreta.');
@@ -1837,6 +1841,7 @@ async function post(url, body, { retry = true } = {}) {
     const err = new Error(data.error ?? `Servidor respondeu ${r.status}.`);
     err.status = r.status;
     err.detail = data.error;
+    err.reason = data.reason;
     throw err;
   }
   return data;
