@@ -1,17 +1,32 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer utilities {
+@theme {
+  --color-discord-blurple: #5865F2;
+  --color-discord-blurple-hover: #4752C4;
+  --color-discord-green: #23A55A;
+  --color-discord-red: #DA373C;
+  --color-discord-red-hover: #C03135;
+  --color-discord-darkest: #111214;
+  --color-discord-primary: #1E1F22;
+  --color-discord-secondary: #2B2D31;
+  --color-discord-tertiary: #313338;
+  --color-discord-hover: #35373C;
+  --color-discord-text: #DBDEE1;
+  --color-discord-muted: #949BA4;
+  --color-discord-white: #FFFFFF;
+
+  --animate-pulse-subtle: pulseSubtle 2.5s infinite ease-in-out;
+  --animate-ping-slow: ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-radar-pulse: radarWave 3s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  --animate-radar-pulse-delayed: radarWave 3s cubic-bezier(0.215, 0.61, 0.355, 1) 1.5s infinite;
+
+  @keyframes pulseSubtle {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
   @keyframes radarWave {
     0% { transform: scale(0.9); opacity: 0.8; }
     100% { transform: scale(1.8); opacity: 0; }
-  }
-  .radar-pulse {
-    animation: radarWave 3s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  }
-  .radar-pulse-delayed {
-    animation: radarWave 3s cubic-bezier(0.215, 0.61, 0.355, 1) 1.5s infinite;
   }
 }
 

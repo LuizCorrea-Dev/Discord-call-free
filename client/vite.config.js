@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  plugins: [tailwindcss()],
   // O .env fica na raiz do projeto, não dentro de client/.
   envDir: '..',
   server: {
