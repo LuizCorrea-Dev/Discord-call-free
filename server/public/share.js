@@ -54,6 +54,7 @@ const opcoes = {
   // A URL vence o que está guardado: ela carrega a intenção desta abertura.
   bitrate: Number(query.get('q')) || Number(salvas.bitrate) || 2_500_000,
   fps: Number(query.get('fps')) || Number(salvas.fps) || 30,
+  resolucao: Number(query.get('res')) || Number(salvas.resolucao) || 1080,
 };
 
 function guardar() {
@@ -67,6 +68,9 @@ function guardar() {
 function espelharOpcoes() {
   const selectQualidade = $('qualidade');
   if (selectQualidade) selectQualidade.value = String(opcoes.bitrate);
+  
+  const selectResolucao = $('resolucao');
+  if (selectResolucao) selectResolucao.value = String(opcoes.resolucao);
   
   // Atualizar visualização do pill de fps
   document.querySelectorAll('.fps-pill').forEach(btn => {
@@ -83,13 +87,15 @@ function espelharOpcoes() {
   const mbps = (opcoes.bitrate / 1000000).toFixed(1);
   if ($('quality-bps-tag')) $('quality-bps-tag').textContent = `${mbps} Mbps`;
   if ($('global-quality-status')) $('global-quality-status').textContent = `${opcoes.bitrate / 1000} kbps`;
-  if ($('global-fps-status')) $('global-fps-status').textContent = `${opcoes.fps} FPS`;
+  if ($('global-fps-status')) $('global-fps-status').textContent = `${opcoes.fps} FPS • ${opcoes.resolucao}p`;
+  if ($('resolution-tag')) $('resolution-tag').textContent = `${opcoes.resolucao}p`;
 }
 
 function aplicarOpcoes(novas) {
   if (!novas) return;
   if (Number(novas.q)) opcoes.bitrate = Number(novas.q);
   if (Number(novas.fps)) opcoes.fps = Number(novas.fps);
+  if (Number(novas.res)) opcoes.resolucao = Number(novas.res);
   // Os selects/botoes seguem o valor efetivo
   espelharOpcoes();
 }
@@ -485,6 +491,7 @@ function criarPainel(fonte) {
       wsUrl: `${proto}://${location.host}/ws?t=${encodeURIComponent(token)}&fonte=${fonte}`,
       bitrate: opcoes.bitrate,
       fps: opcoes.fps,
+      resolucao: opcoes.resolucao,
       audio: !camera,
       fonte,
       // A prévia já pagou o gesto do usuário e a permissão: reaproveitá-la é o
@@ -590,7 +597,7 @@ function criarPainel(fonte) {
     verCamera,
     setStatus,
     indisponivel: () => Boolean(indisponivel),
-    aplicarQualidade: () => broadcaster?.setQuality({ bitrate: opcoes.bitrate, fps: opcoes.fps }),
+    aplicarQualidade: () => broadcaster?.setQuality({ bitrate: opcoes.bitrate, fps: opcoes.fps, resolucao: opcoes.resolucao }),
     ativo: () => Boolean(broadcaster),
     // Fechar a aba tem que soltar a câmera, esteja ela no ar ou só na prévia.
     parar: () => {
@@ -645,6 +652,7 @@ if (somAba) {
 
 espelharOpcoes();
 if ($('qualidade')) $('qualidade').addEventListener('change', (e) => mudarOpcao('bitrate', e.target.value));
+if ($('resolucao')) $('resolucao').addEventListener('change', (e) => mudarOpcao('resolucao', e.target.value));
 
 document.querySelectorAll('.fps-pill').forEach(btn => {
   btn.addEventListener('click', (e) => mudarOpcao('fps', e.currentTarget.dataset.fps));

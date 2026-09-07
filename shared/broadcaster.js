@@ -125,13 +125,10 @@ const AUDIO_BITRATE = 96_000;
 
 // Teto de resolução: acima disso banda e CPU disparam sem ganho de legibilidade.
 // A imagem é reduzida proporcionalmente, nunca cortada.
-const MAX_W = 1920;
-const MAX_H = 1080;
-
 const even = (n) => Math.max(2, n - (n % 2));
 
-function fitWithin(w, h) {
-  const scale = Math.min(1, MAX_W / w, MAX_H / h);
+function fitWithin(w, h, maxW, maxH) {
+  const scale = Math.min(1, maxW / w, maxH / h);
   return { width: even(Math.round(w * scale)), height: even(Math.round(h * scale)) };
 }
 
@@ -233,6 +230,7 @@ export function createBroadcaster({
   apiBase = '',
   bitrate,
   fps,
+  resolucao = 1080,
   audio = false,
   fonte = 'tela',
   // Stream já aberto pela prévia. Reaproveitá-lo é o que evita abrir o seletor
@@ -258,6 +256,8 @@ export function createBroadcaster({
   let config = null;
   let stage = null;
   let stageCtx = null;
+  let maxW = resolucao === 1080 ? 1920 : resolucao === 720 ? 1280 : 854;
+  let maxH = resolucao;
 
   // Uma conexão direta por espectador. O servidor nomeia cada um; aqui o nome
   // é só a chave — quem é a pessoa não interessa para negociar transporte.
@@ -308,7 +308,7 @@ export function createBroadcaster({
     );
 
     const s = track.getSettings();
-    const target = fitWithin(s.width ?? 1280, s.height ?? 720);
+    const target = fitWithin(s.width ?? 1280, s.height ?? 720, maxW, maxH);
 
     config = await pickConfig(target.width, target.height);
     if (!config) {
@@ -865,7 +865,7 @@ export function createBroadcaster({
 
     srcW = sw;
     srcH = sh;
-    const target = fitWithin(sw, sh);
+    const target = fitWithin(sw, sh, maxW, maxH);
 
     if (target.width !== config.width || target.height !== config.height) {
       // O nível acompanha o tamanho. Uma janela de 720p que vira 1080p no meio
@@ -1170,7 +1170,7 @@ export function createBroadcaster({
   }
 
   /** Ajusta qualidade e taxa de quadros com a transmissão no ar. */
-  function setQuality({ bitrate: nextBitrate, fps: nextFps } = {}) {
+  function setQuality({ bitrate: nextBitrate, fps: nextFps, resolucao: nextRes } = {}) {
     if (nextBitrate) bitrate = nextBitrate;
     // Taxa nova, grade nova: o freio do encodeFrame mede contra a taxa atual, e
     // subir de 15 para 60 fps precisa valer já no próximo quadro.
@@ -1178,6 +1178,14 @@ export function createBroadcaster({
       fps = nextFps;
       proximaMarca = null;
       afogado = false;
+    }
+    if (nextRes) {
+      resolucao = nextRes;
+      maxW = resolucao === 1080 ? 1920 : resolucao === 720 ? 1280 : 854;
+      maxH = resolucao;
+      // Zera o tamanho conhecido para o syncSize atualizar o encoder logo no próximo frame
+      srcW = 0;
+      srcH = 0;
     }
     if (encoder?.state !== 'configured') return;
 
