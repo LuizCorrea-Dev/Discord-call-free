@@ -65,16 +65,32 @@ function guardar() {
 }
 
 function espelharOpcoes() {
-  $('qualidade').value = String(opcoes.bitrate);
-  $('quadros').value = String(opcoes.fps);
+  const selectQualidade = $('qualidade');
+  if (selectQualidade) selectQualidade.value = String(opcoes.bitrate);
+  
+  // Atualizar visualização do pill de fps
+  document.querySelectorAll('.fps-pill').forEach(btn => {
+    if (Number(btn.dataset.fps) === opcoes.fps) {
+      btn.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold', 'shadow-sm');
+      btn.classList.remove('text-on-surface-variant');
+    } else {
+      btn.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold', 'shadow-sm');
+      btn.classList.add('text-on-surface-variant');
+    }
+  });
+
+  // Atualizar global text
+  const mbps = (opcoes.bitrate / 1000000).toFixed(1);
+  if ($('quality-bps-tag')) $('quality-bps-tag').textContent = `${mbps} Mbps`;
+  if ($('global-quality-status')) $('global-quality-status').textContent = `${opcoes.bitrate / 1000} kbps`;
+  if ($('global-fps-status')) $('global-fps-status').textContent = `${opcoes.fps} FPS`;
 }
 
 function aplicarOpcoes(novas) {
   if (!novas) return;
   if (Number(novas.q)) opcoes.bitrate = Number(novas.q);
   if (Number(novas.fps)) opcoes.fps = Number(novas.fps);
-  // Os selects seguem o valor efetivo: mostrar 5 Mbps enquanto se transmite a
-  // 1 Mbps é pior do que não mostrar nada.
+  // Os selects/botoes seguem o valor efetivo
   espelharOpcoes();
 }
 
@@ -89,6 +105,7 @@ function mudarOpcao(chave, valor) {
   if (!Number(valor)) return;
   opcoes[chave] = Number(valor);
   guardar();
+  espelharOpcoes();
   for (const painel of Object.values(paineis)) painel?.aplicarQualidade?.();
 }
 
@@ -104,11 +121,12 @@ function readTokenPayload() {
 
 function falhar(titulo, msg) {
   for (const f of FONTES) $(`bloco-${f}`).hidden = true;
-  // Título e motivo no mesmo lugar: sem o cabeçalho não há mais onde separar
-  // os dois, e separados em duas linhas eles diziam a mesma coisa duas vezes.
   const el = $('pageStatus');
-  el.textContent = `${titulo} ${msg}`;
-  el.className = 'status error';
+  if (el) {
+    el.textContent = `${titulo} ${msg}`;
+    el.className = 'status text-error font-bold text-label-md';
+    el.classList.remove('hidden');
+  }
 }
 
 // --------------------------------------------------------------- chamamento
@@ -124,7 +142,16 @@ let piscando = null;
  * aparece para quem está olhando outra coisa.
  */
 function chamar(fonte) {
-  for (const f of FONTES) $(`bloco-${f}`).classList.toggle('chamando', f === fonte);
+  for (const f of FONTES) {
+    const bloco = $(`bloco-${f}`);
+    if (bloco) {
+      if (f === fonte) {
+        bloco.classList.add('ring-2', 'ring-primary', 'shadow-[0_0_15px_rgba(190,194,255,0.2)]');
+      } else {
+        bloco.classList.remove('ring-2', 'ring-primary', 'shadow-[0_0_15px_rgba(190,194,255,0.2)]');
+      }
+    }
+  }
 
   clearInterval(piscando);
   piscando = null;
@@ -219,8 +246,12 @@ function ligarControle() {
       // gastaria rede contra um id que não existe mais.
       clearTimeout(religar);
       religar = 'morto';
-      $('pageStatus').textContent = 'A sala foi fechada. Volte à atividade e comece de novo.';
-      $('pageStatus').className = 'status aviso';
+      const el = $('pageStatus');
+      if (el) {
+        el.textContent = 'A sala foi fechada. Volte à atividade e comece de novo.';
+        el.className = 'status text-error font-bold text-label-md';
+        el.classList.remove('hidden');
+      }
     }
   });
 
@@ -239,6 +270,7 @@ function ligarControle() {
 function criarPainel(fonte) {
   const el = (sufixo) => $(`${fonte}-${sufixo}`);
   const camera = fonte === 'camera';
+  const prefix = camera ? 'cam' : 'screen';
 
   let broadcaster = null;
 
@@ -262,7 +294,11 @@ function criarPainel(fonte) {
     previa = null;
     el('previa').srcObject = null;
     el('previa').hidden = true;
-    el('vazio').hidden = false;
+    
+    const placeholder = $(`${prefix}-preview-placeholder`);
+    const activeDiv = $(`${prefix}-preview-active`);
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (activeDiv) activeDiv.classList.add('hidden');
   }
 
   function mostrarPrevia(stream) {
@@ -272,7 +308,11 @@ function criarPainel(fonte) {
       .play()
       .catch(() => {});
     el('previa').hidden = false;
-    el('vazio').hidden = true;
+    
+    const placeholder = $(`${prefix}-preview-placeholder`);
+    const activeDiv = $(`${prefix}-preview-active`);
+    if (placeholder) placeholder.classList.add('hidden');
+    if (activeDiv) activeDiv.classList.remove('hidden');
 
     // A fonte pode acabar sozinha — webcam desconectada, janela fechada. Sem
     // isto o último quadro fica congelado e a prévia passa a mentir.
@@ -286,15 +326,38 @@ function criarPainel(fonte) {
 
   function setStatus(msg, kind = '') {
     const alvo = el('status');
+    if (!alvo) return;
     alvo.textContent = msg;
-    alvo.className = `status ${kind}`;
+    alvo.className = `status text-label-md font-bold mt-2 ${kind === 'error' ? 'text-error' : 'text-on-surface-variant'}`;
+    alvo.classList.remove('hidden');
   }
 
   function mostrarSetup() {
     el('preview').srcObject = null;
-    el('live').hidden = true;
-    el('setup').hidden = false;
+    el('preview').hidden = true;
     el('start').disabled = false;
+    el('stop').disabled = true;
+    
+    const livePill = $(`${prefix}-live-pill`);
+    if (livePill) {
+      livePill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-outline"></span><span>DESCONECTADO</span>`;
+      livePill.className = "px-space-xs py-0.5 rounded text-badge-status font-badge-status uppercase bg-surface-variant text-outline flex items-center gap-1";
+    }
+    const badgeContainer = $(`${prefix}-live-badge-container`);
+    if (badgeContainer) badgeContainer.classList.add('hidden');
+    
+    const placeholder = $(`${prefix}-preview-placeholder`);
+    const activeDiv = $(`${prefix}-preview-active`);
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (activeDiv) activeDiv.classList.add('hidden');
+    
+    if (!camera && $('somAba')) $('somAba').classList.add('hidden');
+    
+    // Reset stats
+    el('viewers').textContent = '0';
+    el('fps').textContent = '—';
+    el('bitrate').textContent = '—';
+    el('elapsed').textContent = '00:00';
   }
 
   // ------------------------------------------------------ escolher a fonte
@@ -340,8 +403,8 @@ function criarPainel(fonte) {
   }
 
   function fecharMenu() {
-    el('menu').hidden = true;
-    el('escolher').setAttribute('aria-expanded', 'false');
+    if (el('menu')) el('menu').classList.add('hidden');
+    if (el('escolher')) el('escolher').setAttribute('aria-expanded', 'false');
   }
 
   /**
@@ -356,13 +419,16 @@ function criarPainel(fonte) {
       (d) => d.kind === 'videoinput',
     );
 
-    el('menu').replaceChildren(
+    const menuEl = el('menu');
+    if (!menuEl) return;
+    menuEl.replaceChildren(
       ...cams.map((d, i) => {
         const li = document.createElement('li');
         const b = document.createElement('button');
         b.type = 'button';
         b.setAttribute('role', 'menuitemradio');
         b.setAttribute('aria-checked', String(d.deviceId === dispositivo));
+        b.className = `w-full text-left px-space-md py-space-sm text-body-sm rounded-md transition-colors ${d.deviceId === dispositivo ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface hover:bg-surface-variant'}`;
         b.textContent = d.label || `Câmera ${i + 1}`;
         b.addEventListener('click', () => {
           fecharMenu();
@@ -389,16 +455,17 @@ function criarPainel(fonte) {
   async function escolher() {
     if (!camera) return verTela();
 
-    if (!el('menu').hidden) return fecharMenu();
+    const menuEl = el('menu');
+    if (!menuEl.classList.contains('hidden')) return fecharMenu();
 
     await listarCameras();
 
-    if (!el('menu').childElementCount) {
+    if (!menuEl.childElementCount) {
       setStatus('Nenhuma câmera encontrada neste computador.', 'error');
       return;
     }
 
-    el('menu').hidden = false;
+    menuEl.classList.remove('hidden');
     el('escolher').setAttribute('aria-expanded', 'true');
   }
 
@@ -449,7 +516,12 @@ function criarPainel(fonte) {
     previa = null;
     el('previa').srcObject = null;
     el('previa').hidden = true;
-    el('vazio').hidden = false;
+    
+    // Hide placeholder
+    const placeholder = $(`${prefix}-preview-placeholder`);
+    const activeDiv = $(`${prefix}-preview-active`);
+    if (placeholder) placeholder.classList.add('hidden');
+    if (activeDiv) activeDiv.classList.remove('hidden');
 
     try {
       const stream = await broadcaster.start();
@@ -457,11 +529,20 @@ function criarPainel(fonte) {
       el('preview')
         .play()
         .catch(() => {});
-      el('setup').hidden = true;
-      el('live').hidden = false;
+      el('preview').hidden = false;
+      el('stop').disabled = false;
+      
+      const livePill = $(`${prefix}-live-pill`);
+      if (livePill) {
+        livePill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span><span>NO AR</span>`;
+        livePill.className = "px-space-xs py-0.5 rounded text-badge-status font-badge-status uppercase bg-error-container/20 text-error flex items-center gap-1";
+      }
+      const badgeContainer = $(`${prefix}-live-badge-container`);
+      if (badgeContainer) badgeContainer.classList.remove('hidden');
+
       // A tela sempre pede som, e a caixa do seletor pode ter ficado desmarcada:
       // a saída fica à mão desde o início, em vez de só depois de um aviso.
-      if (!camera) $('somAba').hidden = false;
+      if (!camera && $('somAba')) $('somAba').classList.remove('hidden');
       chamar(null);
     } catch (err) {
       broadcaster = null;
@@ -547,21 +628,27 @@ if (!payload) {
 
 // Mantém o vídeo como está e troca só de onde vem o som — as fontes que não
 // carregam o Discord junto são uma aba e a janela de um aplicativo.
-$('somAba').addEventListener('click', async () => {
-  if (!paineis.tela?.ativo()) return;
-  try {
-    await paineis.tela.trocarSom();
-    paineis.tela.setStatus('Som ligado, vindo da fonte escolhida.', 'ok');
-    $('somAba').textContent = 'Trocar a fonte do som';
-  } catch (err) {
-    // Cancelar a segunda janela é escolha, não falha.
-    if (err.name !== 'NotAllowedError') paineis.tela.setStatus(err.message, 'error');
-  }
-});
+const somAba = $('somAba');
+if (somAba) {
+  somAba.addEventListener('click', async () => {
+    if (!paineis.tela?.ativo()) return;
+    try {
+      await paineis.tela.trocarSom();
+      paineis.tela.setStatus('Som ligado, vindo da fonte escolhida.', 'ok');
+      somAba.innerHTML = '<span class="material-symbols-outlined text-[18px]">tab</span><span>Trocar a fonte do som</span>';
+    } catch (err) {
+      // Cancelar a segunda janela é escolha, não falha.
+      if (err.name !== 'NotAllowedError') paineis.tela.setStatus(err.message, 'error');
+    }
+  });
+}
 
 espelharOpcoes();
-$('qualidade').addEventListener('change', (e) => mudarOpcao('bitrate', e.target.value));
-$('quadros').addEventListener('change', (e) => mudarOpcao('fps', e.target.value));
+if ($('qualidade')) $('qualidade').addEventListener('change', (e) => mudarOpcao('bitrate', e.target.value));
+
+document.querySelectorAll('.fps-pill').forEach(btn => {
+  btn.addEventListener('click', (e) => mudarOpcao('fps', e.currentTarget.dataset.fps));
+});
 
 window.addEventListener('beforeunload', () => {
   for (const f of FONTES) paineis[f]?.parar();

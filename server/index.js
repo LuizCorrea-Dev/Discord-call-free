@@ -196,7 +196,6 @@ app.use(
   }),
 );
 
-// ------------------------------------------------------------------ OAuth
 
 /** Troca o code do OAuth pelo access_token. O secret nunca sai do servidor. */
 app.post('/api/token', async (req, res) => {
@@ -231,7 +230,7 @@ app.post('/api/token', async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+        'User-Agent': 'DiscordBot (discord-call, 1.0.0)',
       },
       body: new URLSearchParams({
         client_id: DISCORD_CLIENT_ID,
@@ -278,7 +277,7 @@ app.post('/api/session', async (req, res) => {
     const me = await fetch('https://discord.com/api/users/@me', {
       headers: {
         Authorization: `Bearer ${access_token}`,
-        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+        'User-Agent': 'DiscordBot (discord-call, 1.0.0)',
       },
     }).then((r) => r.json());
 
@@ -412,7 +411,7 @@ async function resolveGuildName(guildId) {
     const response = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
       headers: {
         Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
-        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+        'User-Agent': 'DiscordBot (discord-call, 1.0.0)',
       },
       signal: AbortSignal.timeout(5000),
     });
@@ -445,7 +444,7 @@ async function inVoiceChannel(guildId, channelId, userId) {
     const r = await fetch(`https://discord.com/api/v10/guilds/${guildId}/voice-states/${userId}`, {
       headers: {
         Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
-        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+        'User-Agent': 'DiscordBot (discord-call, 1.0.0)',
       },
     });
 
@@ -520,7 +519,7 @@ app.get('/api/avatar/:id/:hash', async (req, res) => {
   try {
     const upstream = await fetch(`https://cdn.discordapp.com/avatars/${id}/${hash}.png?size=128`, {
       headers: {
-        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+        'User-Agent': 'DiscordBot (discord-call, 1.0.0)',
       },
       // O CDN fora do ar não pode virar uma sala que não abre.
       signal: AbortSignal.timeout(5000),
@@ -574,7 +573,6 @@ function issueRoomTokens(roomId, me) {
   };
 }
 
-// ---------------------------------------------------------------------- salas
 
 /**
  * Listar não exige login: dá para ver o lobby antes de entrar.
@@ -707,7 +705,6 @@ app.post('/api/rooms/password', (req, res) => {
   res.json({ ok: true, locked: Boolean(room.password) });
 });
 
-// ------------------------------------------------- login web (fora do Discord)
 
 // Quem entra pelo site não tem canal de voz, então todas essas pessoas
 // compartilham um lobby só.
@@ -753,7 +750,7 @@ app.get('/auth/callback', async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+        'User-Agent': 'DiscordBot (discord-call, 1.0.0)',
       },
       body: new URLSearchParams({
         client_id: DISCORD_CLIENT_ID,
@@ -771,7 +768,7 @@ app.get('/auth/callback', async (req, res) => {
     const me = await fetch('https://discord.com/api/users/@me', {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
-        'User-Agent': 'DiscordBot (https://github.com/LuizCorrea-Dev/Discord-call-free, 1.0.0)',
+        'User-Agent': 'DiscordBot (discord-call, 1.0.0)',
       },
     }).then((r) => r.json());
 
@@ -965,7 +962,6 @@ app.get('*', (req, res, next) => {
   res.sendFile(path.join(clientDist, 'index.html'), (err) => err && next());
 });
 
-// -------------------------------------------------------------- WebSocket
 
 const server = createServer(app);
 // maxPayload: o relay repassa o buffer intacto para todos os espectadores, então

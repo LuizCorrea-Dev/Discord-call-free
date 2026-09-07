@@ -100,7 +100,7 @@ let telaCheia = false;
 // ser usada, que é a única condição que importa.
 let chegada = null;
 
-// ------------------------------------------------------------------- helpers
+
 
 let toastTimer = null;
 function toast(msg, isError = false) {
@@ -202,7 +202,7 @@ function unwatchSlot(slot) {
   renderBar();
 }
 
-// --------------------------------------------------------------------- grade
+
 
 /** Colunas aproximando o layout da call do Discord: quadrado, crescendo em passos. */
 function columnsFor(n) {
@@ -647,7 +647,7 @@ function buildWatchPrompt(slot, name, isMe) {
   return wrap;
 }
 
-// -------------------------------------------------------------------- perfil
+
 
 function renderProfileButton() {
   if (!session) return;
@@ -902,7 +902,7 @@ function renderBar() {
   $('pWho').textContent = casters.length ? casters.map((p) => p.name).join(', ') : 'ninguém';
 }
 
-// ------------------------------------------------------------------- streams
+
 
 /** Prepara o lugar do transmissor; o decoder só nasce quando o config chega. */
 function openStream(slot, userId) {
@@ -1012,7 +1012,7 @@ function closeAllStreams() {
  * O painel mostra os números de um stream por vez: o ampliado, ou o primeiro.
  * Somar latências de fontes diferentes não significaria nada.
  */
-// -------------------------------------------------------------- WebRTC
+
 
 /**
  * A oferta chegou: monta a resposta e espera os quadros.
@@ -1232,7 +1232,7 @@ window.addEventListener('keydown', (e) => {
   if (!painel.hidden) ensureStatsTimer();
 });
 
-// ------------------------------------------------------------------- arranque
+
 
 boot().catch((err) => {
   console.error(err);
@@ -1329,7 +1329,7 @@ async function entrarNaCall() {
   }
 }
 
-// ---------------------------------------------------------------- login web
+
 
 $('loginBtn').addEventListener('click', () => {
   // Sobe de convidado para conta do Discord: a identidade nova substitui a
@@ -1416,7 +1416,7 @@ function remove(key) {
   }
 }
 
-// -------------------------------------------------------------------- lobby
+
 
 /** Tokens da sala atual. null = estamos no lobby. */
 let roomTokens = null;
@@ -1842,7 +1842,7 @@ async function post(url, body, { retry = true } = {}) {
   return data;
 }
 
-// ----------------------------------------------------------------- websocket
+
 
 function connect() {
   if (!roomTokens) return;
@@ -1993,7 +1993,7 @@ function connect() {
   ws.addEventListener('error', () => ws.close());
 }
 
-// --------------------------------------------------------------------- ações
+
 
 /**
  * Estou transmitindo?
@@ -2327,7 +2327,7 @@ async function broadcastFromHere() {
   }
 }
 
-// ------------------------------------------------------- modais das salas
+
 
 $('newRoom').addEventListener('click', () => {
   if (!session) return;
@@ -2406,7 +2406,7 @@ function openRoomSettings() {
 
 $('roomSettings').addEventListener('click', openRoomSettings);
 
-// ----------------------------------------------------------------- painel
+
 
 /**
  * As barras somem com o cursor parado e voltam ao primeiro movimento. Valem

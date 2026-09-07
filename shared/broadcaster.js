@@ -569,7 +569,6 @@ export function createBroadcaster({
     return faixa;
   }
 
-  // -------------------------------------------------------------------- áudio
 
   /**
    * Captura, codifica e envia o som.
@@ -678,7 +677,6 @@ export function createBroadcaster({
     return null;
   }
 
-  // ------------------------------------------------------------------ captura
 
   function pump(track) {
     if (window.MediaStreamTrackProcessor) pumpDirect(track);
@@ -932,8 +930,6 @@ export function createBroadcaster({
     bytes += buf.byteLength;
   }
 
-  let pacotesAudioLog = 0;
-  let pacotesVideoLog = 0;
 
   /**
    * [1B slot][1B tipo][8B timestamp][8B relógio de envio][payload]
@@ -951,18 +947,6 @@ export function createBroadcaster({
     view.setFloat64(2, timestamp);
     view.setFloat64(10, agora);
     new Uint8Array(buf, 18).set(data);
-    
-    if (tipo === TIPO_AUDIO) {
-      pacotesAudioLog++;
-      if (pacotesAudioLog % 50 === 0) {
-        console.log(`[Rastreio Broadcaster] Áudio gerado/enviado. sentAt=${agora}, bufferWs=${ws ? ws.bufferedAmount : 0}`);
-      }
-    } else {
-      pacotesVideoLog++;
-      if (pacotesVideoLog % 30 === 0) {
-        console.log(`[Rastreio Broadcaster] Vídeo gerado/enviado. tipo=${tipo === TIPO_KEYFRAME ? 'key' : 'delta'}, sentAt=${agora}, bufferWs=${ws ? ws.bufferedAmount : 0}`);
-      }
-    }
 
     return buf;
   }
@@ -980,7 +964,6 @@ export function createBroadcaster({
     return out;
   }
 
-  // ---------------------------------------------------------------- websocket
 
   function connect() {
     return new Promise((resolve, reject) => {
@@ -1034,11 +1017,6 @@ export function createBroadcaster({
     });
   }
 
-  // -------------------------------------------------------------------- parar
-
-  // ------------------------------------------------------------ ao vivo
-
-  // ------------------------------------------------------------------ WebRTC
 
   function enviarRtc(peerId, payload) {
     if (ws?.readyState !== WebSocket.OPEN) return;

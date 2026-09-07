@@ -193,7 +193,6 @@ export function toControls(room, userId, obj) {
   return entregues;
 }
 
-// ------------------------------------------------------------------- senha
 
 function hashPassword(password, salt = crypto.randomBytes(16)) {
   return { salt, hash: crypto.scryptSync(password, salt, 32) };
@@ -255,7 +254,6 @@ export function setPassword(room, userId, password) {
   return null;
 }
 
-// ------------------------------------------------------------------ registro
 
 export function createRoom({
   instance,
@@ -456,7 +454,6 @@ const sweeper = setInterval(() => {
 }, SWEEP_EVERY_MS);
 sweeper.unref?.();
 
-// -------------------------------------------------------------------- envio
 
 function send(ws, data) {
   if (!ws || ws.readyState !== ws.OPEN) return false;
@@ -473,7 +470,6 @@ function toViewers(room, obj) {
   for (const v of room.viewers) send(v, msg);
 }
 
-// -------------------------------------------------------------------- estado
 
 // O avatar vai junto do nome: a lista de quem assiste mostra as fotos, e sem
 // isto sobrava só a inicial colorida para quem tem foto no Discord.
@@ -584,7 +580,6 @@ export function rename(room, ws, raw) {
   broadcastState(room);
 }
 
-// ---------------------------------------------------------------- transmissor
 
 function freeSlot(room) {
   for (let i = 0; i < MAX_BROADCASTERS; i++) {
@@ -715,12 +710,6 @@ export function pushChunk(room, entry, chunk) {
     // Áudio não depende de keyframe — cada pacote Opus se decodifica sozinho —,
     // então não passa pelo controle de "já recebeu ponto de partida".
     if (isAudio) {
-      entry.pacotesAudioLog = (entry.pacotesAudioLog || 0) + 1;
-      if (entry.pacotesAudioLog % 50 === 0) {
-        // chunk em Node.js WebSocket é um Buffer. setFloat64() sem 3º arg é BigEndian
-        const sentAt = chunk.readDoubleBE(10);
-        console.log(`[Rastreio Servidor] Áudio repassado. sentAt=${sentAt}, lag_transmissor_servidor=${Date.now() - sentAt}ms`);
-      }
 
       if (v.bufferedAmount > MAX_BUFFERED_BYTES) {
         room.droppedChunks++;
@@ -734,11 +723,6 @@ export function pushChunk(room, entry, chunk) {
       continue;
     }
 
-    entry.pacotesVideoLog = (entry.pacotesVideoLog || 0) + 1;
-    if (entry.pacotesVideoLog % 30 === 0) {
-      const sentAt = chunk.readDoubleBE(10);
-      console.log(`[Rastreio Servidor] Vídeo repassado. tipo=${isKeyframe ? 'key' : 'delta'}, sentAt=${sentAt}, lag_transmissor_servidor=${Date.now() - sentAt}ms`);
-    }
 
     if (isKeyframe) {
       if (v.bufferedAmount > MAX_BUFFERED_BYTES * 2) {
@@ -812,7 +796,6 @@ export function detachBroadcaster(room, ws) {
   broadcastState(room);
 }
 
-// --------------------------------------------------------------- espectador
 
 export function watch(room, ws, slot) {
   const entry = room.slots.get(slot);
@@ -857,7 +840,6 @@ export function needKeyframe(room, ws, slot) {
   requestKeyframe(entry, { urgente: true });
 }
 
-// ------------------------------------------------------------------- WebRTC
 
 /**
  * Sinalização: o servidor só carrega envelope, nunca abre.

@@ -1,142 +1,338 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR" style="">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Transmitir</title>
-    <!-- ?v= existe porque share.js/css têm nome fixo. Quem abriu a página antes
-         dos cabeçalhos no-store guardou a versão antiga por heurística do
-         navegador, e continuaria usando ela para sempre. Trocar a query força
-         uma URL nova. Incremente ao publicar mudanças nesses arquivos. -->
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface": "#121316", "inverse-surface": "#e3e2e6", "inverse-primary": "#3f4cda", "on-primary-fixed": "#000569", "secondary-container": "#23a55a", "tertiary-fixed-dim": "#ffb3ae", "on-secondary-container": "#003115", "inverse-on-surface": "#2f3033", "on-primary-container": "#fffdff", "outline-variant": "#454655", "error-container": "#93000a", "on-secondary-fixed": "#00210c", "tertiary-container": "#dd2f36", "on-primary-fixed-variant": "#222fc2", "on-secondary-fixed-variant": "#005228", "on-tertiary-fixed-variant": "#930015", "surface-variant": "#343538", "on-background": "#e3e2e6", "on-error": "#690005", "tertiary-fixed": "#ffdad7", "surface-bright": "#38393c", "outline": "#8f8fa0", "tertiary": "#ffb3ae", "surface-container-low": "#1a1b1e", "surface-container-lowest": "#0d0e11", "secondary-fixed": "#83fba5", "on-primary": "#000da4", "on-error-container": "#ffdad6", "surface-container-high": "#292a2d", "on-secondary": "#003919", "on-tertiary-container": "#fffcff", "on-tertiary-fixed": "#410004", "error": "#ffb4ab", "on-surface-variant": "#c6c5d7", "surface-container": "#1f1f23", "primary-fixed-dim": "#bec2ff", "secondary-fixed-dim": "#66de8c", "on-surface": "#e3e2e6", "surface-container-highest": "#343538", "background": "#121316", "on-tertiary": "#68000c", "surface-tint": "#bec2ff", "surface-dim": "#121316", "primary": "#bec2ff", "primary-fixed": "#e0e0ff", "secondary": "#66de8c", "primary-container": "#5865f2" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-2xl": "2rem", "gutter-default": "1rem", "space-2xs": "0.25rem", "space-xs": "0.5rem", "space-md": "1rem", "space-sm": "0.75rem", "modal-padding": "1.75rem", "space-3xl": "2.5rem", "space-lg": "1.25rem", "space-xl": "1.5rem" }, "fontFamily": { "section-header": [ "Hanken Grotesk" ], "headline-md": [ "Manrope" ], "body-md": [ "Hanken Grotesk" ], "headline-sm": [ "Manrope" ], "headline-xl": [ "Manrope" ], "headline-lg": [ "Manrope" ], "label-md": [ "Hanken Grotesk" ], "label-sm": [ "Hanken Grotesk" ], "body-sm": [ "Hanken Grotesk" ], "badge-status": [ "Hanken Grotesk" ], "body-lg": [ "Hanken Grotesk" ] }, "fontSize": { "section-header": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.06em", "fontWeight": "700" } ], "headline-md": [ "20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "body-md": [ "14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" } ], "headline-sm": [ "16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" } ], "headline-xl": [ "32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" } ], "headline-lg": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" } ], "label-md": [ "14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" } ], "label-sm": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" } ], "body-sm": [ "12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" } ], "badge-status": [ "11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "800" } ], "body-lg": [ "15px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" } ] } } } };</script>
     <link rel="stylesheet" href="/share.css?v=25" />
   </head>
-  <body>
-    <main class="card">
-      <header>
-        <h1>Transmitir</h1>
-      </header>
-
-      <!-- Erro que impede a página inteira: token inválido, navegador sem
-           suporte. Os erros de cada fonte ficam no bloco dela. -->
-      <p id="pageStatus" class="status" role="status"></p>
-
-      <div class="fontes">
-        <section class="bloco" id="bloco-tela">
-          <h2>Tela</h2>
-
-          <!-- Fora do setup e do live de propósito: dá para escolher antes de
-               começar e para corrigir com a transmissão no ar, que é quando o
-               problema costuma aparecer. Vale para a câmera também. -->
-          <div class="ajustes">
-            <label>
-              Qualidade
-              <select id="qualidade">
-                <option value="800000">Leve — 0,8 Mbps</option>
-                <option value="1500000">Média — 1,5 Mbps</option>
-                <option value="2500000">Boa — 2,5 Mbps</option>
-                <option value="5000000">Alta — 5 Mbps</option>
-                <option value="8000000">Máxima — 8 Mbps</option>
-              </select>
-            </label>
-            <label>
-              Quadros
-              <select id="quadros">
-                <option value="15">15 fps</option>
-                <option value="30">30 fps</option>
-                <option value="60">60 fps</option>
-              </select>
-            </label>
+  <body class="bg-surface font-body-md text-on-surface">
+    <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]">
+      <div class="h-16 w-full px-space-lg flex items-center justify-between gap-space-md">
+        <div class="flex items-center gap-space-md min-w-0">
+          <img alt="CallFree" class="h-8 w-auto object-contain shrink-0" src="/callfree_logo.png">
+          <div class="flex items-center gap-space-xs text-on-surface-variant text-label-sm font-label-sm truncate">
+            <span class="hover:text-on-surface transition-colors cursor-pointer">Discord Call</span>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-on-surface font-label-md text-label-md truncate">Transmitir</span>
           </div>
-
-          <div id="tela-setup">
-            <div class="sem-preview" id="tela-vazio">Sem preview</div>
-            <video id="tela-previa" muted playsinline hidden></video>
-
-            <p class="note" id="tela-nota">
-              Marque "Compartilhar o áudio" na janela do navegador para levar o som.
-            </p>
-
-            <!-- A seta escolhe sem transmitir; o botão transmite o que estiver
-                 escolhido. Separados porque conferir o enquadramento e ir ao
-                 ar são decisões diferentes, e juntas não dá para voltar atrás
-                 diante de quem já está assistindo. -->
-            <div class="acao">
-              <button id="tela-start" class="primary">Escolher tela e transmitir</button>
-              <button
-                id="tela-escolher"
-                class="primary seta"
-                title="Ver outra tela antes de transmitir"
-                aria-label="Ver outra tela antes de transmitir"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg>
-              </button>
-            </div>
-          </div>
-
-          <div id="tela-live" hidden>
-            <div class="live-badge"><span class="dot"></span> No ar</div>
-            <video id="tela-preview" muted playsinline></video>
-            <div class="stats">
-              <div><strong id="tela-viewers">0</strong><span>assistindo</span></div>
-              <div><strong id="tela-fps">—</strong><span>quadros</span></div>
-              <div><strong id="tela-bitrate">—</strong><span>enviando</span></div>
-              <div><strong id="tela-elapsed">00:00</strong><span>no ar</span></div>
-            </div>
-            <button id="somAba" class="secondary" hidden>Som de uma aba ou janela</button>
-            <button id="tela-stop" class="danger">Parar de transmitir a tela</button>
-          </div>
-
-          <p id="tela-status" class="status" role="status"></p>
-        </section>
-
-        <section class="bloco" id="bloco-camera">
-          <h2>Câmera</h2>
-
-          <div id="camera-setup">
-            <div class="sem-preview" id="camera-vazio">Sem preview</div>
-            <video id="camera-previa" muted playsinline hidden></video>
-
-            <div class="acao">
-              <button id="camera-start" class="primary">Ligar a câmera</button>
-              <button
-                id="camera-escolher"
-                class="primary seta"
-                title="Escolher a câmera"
-                aria-label="Escolher a câmera"
-                aria-haspopup="menu"
-                aria-expanded="false"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg>
-              </button>
-
-              <!-- Preenchido depois da permissão: antes dela o navegador entrega
-                   os dispositivos sem nome, e uma lista de itens em branco não
-                   ajuda ninguém a escolher. -->
-              <ul id="camera-menu" class="menu" role="menu" hidden></ul>
-            </div>
-          </div>
-
-          <div id="camera-live" hidden>
-            <div class="live-badge"><span class="dot"></span> No ar</div>
-            <video id="camera-preview" muted playsinline></video>
-            <div class="stats">
-              <div><strong id="camera-viewers">0</strong><span>assistindo</span></div>
-              <div><strong id="camera-fps">—</strong><span>quadros</span></div>
-              <div><strong id="camera-bitrate">—</strong><span>enviando</span></div>
-              <div><strong id="camera-elapsed">00:00</strong><span>no ar</span></div>
-            </div>
-            <button id="camera-stop" class="danger">Desligar a câmera</button>
-          </div>
-
-          <p id="camera-status" class="status" role="status"></p>
-        </section>
+        </div>
+        <div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-surface-container-high">
+          <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+          <span class="text-secondary font-badge-status text-badge-status uppercase tracking-wider">Servidor Conectado / WebRTC Ativo</span>
+        </div>
       </div>
+    </header>
 
-      <footer>
-        <p>Mantenha esta aba aberta enquanto transmite. Você pode voltar para o Discord — a transmissão continua.</p>
-      </footer>
-    </main>
+    <aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low z-40 flex flex-col justify-between py-space-lg">
+      <div class="flex flex-col gap-space-md px-space-md">
+        <div class="px-space-sm text-section-header font-section-header uppercase tracking-wider text-outline">Canais de Voz</div>
+        <nav class="flex flex-col gap-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-lg">
+          <a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-xs transition-colors bg-primary-container text-on-primary-container font-bold rounded-lg" data-path="broadcast-studio" href="#">
+            <span class="material-symbols-outlined text-[18px]">podcasts</span>
+            <span class="font-label-md text-label-md truncate">Estúdio de Transmissão</span>
+          </a>
+        </nav>
+      </div>
+      <div class="px-space-md">
+        <div class="p-space-sm rounded-lg bg-surface-container flex items-center justify-between">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-secondary text-[18px]">wifi_channel</span>
+            <div class="flex flex-col">
+              <span class="text-label-sm font-label-sm text-on-surface leading-tight" id="global-quality-status">5000 kbps</span>
+              <span class="text-body-sm font-body-sm text-outline leading-tight" id="global-fps-status">60 FPS • 1080p</span>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface cursor-pointer text-[18px]">settings</span>
+        </div>
+      </div>
+    </aside>
 
-    <script type="module" src="/share.js?v=25"></script>
+    <div class="pl-64">
+      <main class="w-full pt-16 bg-surface min-h-screen">
+        <div class="flex flex-col w-full">
+          <!-- Interactive Broadcast Workspace -->
+          <div class="w-full max-w-7xl mx-auto px-space-md sm:px-space-xl py-space-lg flex flex-col gap-space-xl">
+            <!-- Top Studio Ribbon / Breadcrumb Context -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md bg-surface-container-low p-space-lg rounded-xl shadow-lg">
+              <div class="flex items-center gap-space-md min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center shrink-0 text-primary">
+                  <span class="material-symbols-outlined text-2xl">podcasts</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <div class="flex items-center gap-space-xs">
+                    <h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">Transmitir</h1>
+                    <span class="px-space-xs py-0.5 rounded text-badge-status font-badge-status uppercase bg-surface-container-highest text-on-surface-variant">Estúdio Pro</span>
+                  </div>
+                  <p class="text-body-sm font-body-sm text-outline truncate">Transmita gameplay, janelas ou sua webcam diretamente para a sala de voz</p>
+                </div>
+              </div>
+              <p id="pageStatus" class="hidden text-error font-bold text-label-md" role="status"></p>
+            </div>
+
+            <!-- Main Dual Workstation Grid (Tela & Câmera) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
+              <!-- ============================================ -->
+              <!-- COLUNA 1: TELA (COMPARTILHAMENTO)           -->
+              <!-- ============================================ -->
+              <section class="lg:col-span-7 flex flex-col gap-space-lg bg-surface-container-low p-space-lg rounded-xl shadow-xl relative overflow-hidden h-full justify-between" id="bloco-tela">
+                <!-- Header da Coluna -->
+                <div class="flex items-center justify-between pb-space-sm border-b-0">
+                  <div class="flex items-center gap-space-xs">
+                    <span class="material-symbols-outlined text-primary text-xl">screen_share</span>
+                    <h2 class="text-section-header font-section-header uppercase tracking-wider text-primary">Tela</h2>
+                  </div>
+                  <span class="px-space-xs py-0.5 rounded text-badge-status font-badge-status uppercase bg-surface-container-high text-on-surface-variant">Pipeline WebRTC v2</span>
+                </div>
+                <!-- Painel de Configurações Técnicas -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md bg-surface-container p-space-md rounded-lg">
+                  <div class="flex flex-col gap-space-2xs">
+                    <div class="flex items-center justify-between">
+                      <label class="text-section-header font-section-header uppercase text-outline" for="qualidade">Qualidade</label>
+                      <span class="text-badge-status font-badge-status text-primary" id="quality-bps-tag">2.5 Mbps</span>
+                    </div>
+                    <div class="relative">
+                      <select class="w-full appearance-none bg-surface-container-lowest text-on-surface text-label-md font-label-md px-space-md py-space-sm rounded-lg focus:outline-none transition-all pr-10 cursor-pointer" id="qualidade">
+                        <option value="800000">Leve — 0,8 Mbps</option>
+                        <option value="1500000">Média — 1,5 Mbps</option>
+                        <option value="2500000" selected>Boa — 2,5 Mbps</option>
+                        <option value="5000000">Alta — 5 Mbps</option>
+                        <option value="8000000">Máxima — 8 Mbps</option>
+                      </select>
+                      <span class="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">expand_more</span>
+                    </div>
+                  </div>
+                  <!-- Quadros -->
+                  <div class="flex flex-col gap-space-2xs">
+                    <div class="flex items-center justify-between">
+                      <label class="text-section-header font-section-header uppercase text-outline">Quadros</label>
+                      <span class="text-badge-status font-badge-status text-secondary">Estável</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 bg-surface-container-lowest p-1 rounded-lg">
+                      <button class="fps-pill py-space-xs text-center text-label-sm font-label-sm rounded text-on-surface-variant hover:text-on-surface transition-all" data-fps="15" type="button">15 fps</button>
+                      <button class="fps-pill py-space-xs text-center text-label-sm font-label-sm rounded bg-primary-container text-on-primary-container shadow-sm transition-all font-bold" data-fps="30" type="button">30 fps</button>
+                      <button class="fps-pill py-space-xs text-center text-label-sm font-label-sm rounded text-on-surface-variant hover:text-on-surface flex items-center justify-center gap-1 transition-all" data-fps="60" type="button">
+                        <span class="">60 fps</span>
+                        <span class="material-symbols-outlined text-[12px] text-tertiary">bolt</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Área de Preview de Tela -->
+                <div class="relative w-full aspect-video rounded-xl bg-surface-container-lowest overflow-hidden flex items-center justify-center group" id="tela-setup">
+                  <!-- Inactive Canvas State -->
+                  <div class="flex flex-col items-center justify-center gap-space-sm text-center px-space-md select-none transition-all duration-300" id="screen-preview-placeholder">
+                    <div class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-outline group-hover:text-primary group-hover:scale-105 transition-all">
+                      <span class="material-symbols-outlined text-3xl">desktop_windows</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-label-md font-label-md text-on-surface" id="tela-vazio">Sem preview</span>
+                      <span class="text-body-sm font-body-sm text-outline">Selecione uma janela, guia ou monitor</span>
+                    </div>
+                  </div>
+                  <!-- Active Stream Canvas -->
+                  <div class="absolute inset-0 w-full h-full bg-surface-container-highest hidden" id="screen-preview-active">
+                    <video id="tela-previa" class="w-full h-full object-contain" muted playsinline hidden></video>
+                    <video id="tela-preview" class="w-full h-full object-contain" muted playsinline hidden></video>
+                  </div>
+                  <div class="absolute top-3 left-3 flex items-center gap-space-2xs hidden" id="screen-live-badge-container">
+                    <span class="px-space-xs py-0.5 rounded text-badge-status font-badge-status uppercase bg-surface-container-lowest/80 backdrop-blur-md text-on-surface flex items-center gap-1">
+                      <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse" id="screen-feed-dot"></span>
+                      <span id="screen-feed-label" class="">TRANSMITINDO</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container text-on-surface">
+                  <span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">info</span>
+                  <p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed" id="tela-nota">
+                    Marque <strong class="text-on-surface font-semibold">"Compartilhar o áudio"</strong> na janela do navegador para levar o som.
+                  </p>
+                </div>
+                <p id="tela-status" class="hidden text-error font-bold text-label-md" role="status"></p>
+
+                <!-- Split Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-space-sm">
+                  <div class="flex-1 flex rounded-lg overflow-hidden shadow-md">
+                    <button class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container px-space-lg py-space-sm flex items-center justify-center gap-space-xs text-label-md font-label-md transition-colors" id="tela-start">
+                      <span class="material-symbols-outlined text-[20px]" id="screen-btn-icon">screen_share</span>
+                      <span id="screen-btn-text" class="">Escolher tela e transmitir</span>
+                    </button>
+                    <div class="w-px bg-on-primary-container/20"></div>
+                    <button class="w-12 bg-primary-container hover:bg-primary-container/90 text-on-primary-container flex items-center justify-center transition-colors" id="tela-escolher" title="Ver outra tela antes de transmitir">
+                      <span class="material-symbols-outlined text-[20px]">keyboard_arrow_up</span>
+                    </button>
+                  </div>
+                  <button class="px-space-md py-space-sm bg-surface-container-high hover:bg-surface-variant text-on-surface text-label-md font-label-md rounded-lg flex items-center justify-center gap-space-xs transition-colors shrink-0 hidden" id="somAba">
+                    <span class="material-symbols-outlined text-[18px]">tab</span>
+                    <span class="">Som de aba/janela</span>
+                  </button>
+                </div>
+
+                <!-- Telemetria Tela -->
+                <div class="bg-surface-container p-space-md rounded-xl flex flex-col gap-space-sm">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-xs">
+                      <span class="text-section-header font-section-header uppercase text-outline">Status da Transmissão</span>
+                      <span class="px-space-xs py-0.5 rounded text-badge-status font-badge-status uppercase bg-surface-variant text-outline flex items-center gap-1" id="screen-live-pill"><span class="w-1.5 h-1.5 rounded-full bg-outline"></span><span class="">DESCONECTADO</span></span>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-xs">
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">visibility</span>
+                        <span class="text-body-sm font-body-sm">Espectadores</span>
+                      </div>
+                      <span class="text-headline-md font-headline-md text-on-surface mt-1" id="tela-viewers">0</span>
+                    </div>
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">motion_photos_on</span>
+                        <span class="text-body-sm font-body-sm">FPS</span>
+                      </div>
+                      <span class="text-headline-md font-headline-md text-on-surface mt-1" id="tela-fps">—</span>
+                    </div>
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">upload</span>
+                        <span class="text-body-sm font-body-sm">Bitrate</span>
+                      </div>
+                      <span class="text-headline-md font-headline-md text-on-surface mt-1" id="tela-bitrate">—</span>
+                    </div>
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">timer</span>
+                        <span class="text-body-sm font-body-sm">Tempo</span>
+                      </div>
+                      <span class="text-headline-md font-headline-md text-on-surface mt-1 font-mono" id="tela-elapsed">00:00</span>
+                    </div>
+                  </div>
+                  <button class="mt-space-2xs w-full py-space-xs rounded-lg text-error hover:bg-error-container/20 transition-all text-label-sm font-label-sm flex items-center justify-center gap-space-xs disabled:opacity-40 disabled:cursor-not-allowed" id="tela-stop" disabled>
+                    <span class="material-symbols-outlined text-[18px]">stop_screen_share</span>
+                    <span class="">Parar de transmitir a tela</span>
+                  </button>
+                </div>
+              </section>
+
+              <!-- ============================================ -->
+              <!-- COLUNA 2: CÂMERA (WEBCAM)                   -->
+              <!-- ============================================ -->
+              <section class="lg:col-span-5 flex flex-col gap-space-lg bg-surface-container-low p-space-lg rounded-xl shadow-xl relative overflow-hidden h-full justify-between" id="bloco-camera">
+                <!-- Header -->
+                <div class="flex items-center justify-between pb-space-sm border-b-0">
+                  <div class="flex items-center gap-space-xs">
+                    <span class="material-symbols-outlined text-primary text-xl">videocam</span>
+                    <h2 class="text-section-header font-section-header uppercase tracking-wider text-primary">Câmera</h2>
+                  </div>
+                </div>
+                <!-- Área de Preview Câmera -->
+                <div class="relative w-full aspect-[4/3] rounded-xl bg-surface-container-lowest overflow-hidden flex items-center justify-center group" id="camera-setup">
+                  <!-- Inactive State -->
+                  <div class="flex flex-col items-center justify-center gap-space-sm text-center px-space-md select-none transition-all duration-300" id="cam-preview-placeholder">
+                    <div class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-outline group-hover:text-primary group-hover:scale-105 transition-all">
+                      <span class="material-symbols-outlined text-3xl">videocam_off</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-label-md font-label-md text-on-surface" id="camera-vazio">Sem preview</span>
+                      <span class="text-body-sm font-body-sm text-outline">Webcam desligada ou dispositivo não iniciado</span>
+                    </div>
+                  </div>
+                  <!-- Active Webcam -->
+                  <div class="absolute inset-0 w-full h-full bg-surface-container-highest hidden" id="cam-preview-active">
+                    <video id="camera-previa" class="w-full h-full object-cover" muted playsinline hidden></video>
+                    <video id="camera-preview" class="w-full h-full object-cover" muted playsinline hidden></video>
+                  </div>
+                  <div class="absolute top-3 left-3 flex items-center gap-space-2xs hidden" id="cam-live-badge-container">
+                    <span class="px-space-xs py-0.5 rounded text-badge-status font-badge-status uppercase bg-surface-container-lowest/80 backdrop-blur-md text-on-surface flex items-center gap-1">
+                      <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse" id="cam-feed-dot"></span>
+                      <span id="cam-feed-label" class="">WEBCAM LIGADA</span>
+                    </span>
+                  </div>
+                </div>
+
+                <p id="camera-status" class="hidden text-error font-bold text-label-md" role="status"></p>
+
+                <!-- Action Buttons Câmera -->
+                <div class="flex flex-col gap-1 relative">
+                  <div class="flex rounded-lg overflow-hidden shadow-md">
+                    <button class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container px-space-lg py-space-sm flex items-center justify-center gap-space-xs text-label-md font-label-md transition-colors" id="camera-start">
+                      <span class="material-symbols-outlined text-[20px]" id="cam-btn-icon">videocam</span>
+                      <span id="cam-btn-text" class="">Ligar a câmera</span>
+                    </button>
+                    <div class="w-px bg-on-primary-container/20"></div>
+                    <button class="w-12 bg-primary-container hover:bg-primary-container/90 text-on-primary-container flex items-center justify-center transition-colors" id="camera-escolher" title="Dispositivos de vídeo">
+                      <span class="material-symbols-outlined text-[20px]">keyboard_arrow_up</span>
+                    </button>
+                  </div>
+                  <ul class="hidden flex flex-col gap-1 p-space-xs bg-surface-container-highest rounded-lg shadow-2xl absolute top-full left-0 right-0 z-50 mt-1 max-h-48 overflow-auto" id="camera-menu" role="menu">
+                  </ul>
+                </div>
+
+                <!-- Telemetria Câmera -->
+                <div class="bg-surface-container p-space-md rounded-xl flex flex-col gap-space-sm">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-xs">
+                      <span class="text-section-header font-section-header uppercase text-outline">Status do Feed</span>
+                      <span class="px-space-xs py-0.5 rounded text-badge-status font-badge-status uppercase bg-surface-variant text-outline flex items-center gap-1" id="cam-live-pill"><span class="w-1.5 h-1.5 rounded-full bg-outline"></span><span class="">DESLIGADA</span></span>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-xs">
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">group</span>
+                        <span class="text-body-sm font-body-sm">Sala</span>
+                      </div>
+                      <span class="text-headline-md font-headline-md text-on-surface mt-1" id="camera-viewers">0</span>
+                    </div>
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">tune</span>
+                        <span class="text-body-sm font-body-sm">FPS</span>
+                      </div>
+                      <span class="text-headline-md font-headline-md text-on-surface mt-1" id="camera-fps">—</span>
+                    </div>
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">speed</span>
+                        <span class="text-body-sm font-body-sm">Up</span>
+                      </div>
+                      <span class="text-headline-md font-headline-md text-on-surface mt-1" id="camera-bitrate">—</span>
+                    </div>
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">timelapse</span>
+                        <span class="text-body-sm font-body-sm">Duração</span>
+                      </div>
+                      <span class="text-headline-md font-headline-md text-on-surface mt-1 font-mono" id="camera-elapsed">00:00</span>
+                    </div>
+                  </div>
+                  <button class="mt-space-2xs w-full py-space-xs rounded-lg text-error hover:bg-error-container/20 transition-all text-label-sm font-label-sm flex items-center justify-center gap-space-xs disabled:opacity-40 disabled:cursor-not-allowed" id="camera-stop" disabled>
+                    <span class="material-symbols-outlined text-[18px]">videocam_off</span>
+                    <span class="">Desligar a câmera</span>
+                  </button>
+                </div>
+              </section>
+            </div>
+
+            <!-- Footer -->
+            <footer class="w-full bg-surface-container-low p-space-md rounded-xl flex flex-col sm:flex-row items-center justify-between gap-space-md shadow-md">
+              <div class="flex items-center gap-space-sm text-on-surface-variant">
+                <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">sync</span>
+                </div>
+                <p class="text-body-sm font-body-sm leading-relaxed">
+                  Mantenha esta aba aberta enquanto transmite. Você pode voltar para o Discord — a transmissão continua.
+                </p>
+              </div>
+            </footer>
+          </div>
+          <script type="module" src="/share.js?v=25"></script>
+        </div>
+      </main>
+    </div>
   </body>
 </html>

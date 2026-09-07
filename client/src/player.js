@@ -64,9 +64,7 @@ export function createPlayer(canvas, { onError, onTamanho, onNeedKeyframe } = {}
   let lastKeyframeReq = 0;
   let lastLagMs = 0;
   let framesDrawn = 0;
-  let pacotesVideoLog = 0;
 
-  // Quadros decodificados esperando a hora de aparecer, em ordem de exibição.
   const fila = [];
   // Instante local que corresponde ao timestamp zero da origem. É o que traduz
   // "capturado em tal momento" para "desenhar em tal momento".
@@ -141,12 +139,6 @@ export function createPlayer(canvas, { onError, onTamanho, onNeedKeyframe } = {}
     const sentAt = view.getFloat64(10);
     lastLagMs = Date.now() - sentAt;
 
-    pacotesVideoLog++;
-    if (pacotesVideoLog % 30 === 0) {
-      console.log(`[Rastreio Cliente] Vídeo recebido. tipo=${isKeyframe ? 'key' : 'delta'}, sentAt=${sentAt}, lag_ponta_a_ponta=${Math.round(lastLagMs)}ms`);
-    }
-
-    // Se o decodificador está engasgando, descartar o quadro e pedir um novo recomeço.
     // Isso evita o acúmulo de buffer (e consequente atraso infinito) em computadores mais lentos.
     if (decoder.decodeQueueSize > 5) {
       console.warn(`[decoder] Fila muito grande (${decoder.decodeQueueSize}). Descartando quadro e pedindo keyframe.`);

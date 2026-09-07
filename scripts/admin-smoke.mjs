@@ -68,7 +68,7 @@ const child = spawn(process.execPath, ['server/index.js'], {
     // Credenciais de mentira, mas presentes: sem elas o /admin/auth/login
     // devolve um redirect relativo de "nao configurado" e o teste morre em
     // "Invalid URL". Estavam vindo do .env de quem rodava, entao o teste
-    // passava na maquina do autor e em lugar nenhum mais.
+    // passava na máquina local e em lugar nenhum mais.
     DISCORD_CLIENT_ID: '123456789012345678',
     DISCORD_CLIENT_SECRET: 'admin-smoke-client-secret',
   },
