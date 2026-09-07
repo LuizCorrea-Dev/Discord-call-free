@@ -1,3 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  @keyframes radarWave {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .radar-pulse {
+    animation: radarWave 3s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+  .radar-pulse-delayed {
+    animation: radarWave 3s cubic-bezier(0.215, 0.61, 0.355, 1) 1.5s infinite;
+  }
+}
+
 :root {
   --bg: #000;
   --panel: #1e1f22;
