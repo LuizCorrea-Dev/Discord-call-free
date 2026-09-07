@@ -1,31 +1,48 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html class="dark" lang="pt-BR" style="">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Termos de Serviço</title>
-    <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333; background: #fff; }
-        h1, h2 { color: #111; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface": "#121316", "inverse-surface": "#e3e2e6", "inverse-primary": "#3f4cda", "on-primary-fixed": "#000569", "secondary-container": "#23a55a", "tertiary-fixed-dim": "#ffb3ae", "on-secondary-container": "#003115", "inverse-on-surface": "#2f3033", "on-primary-container": "#fffdff", "outline-variant": "#454655", "error-container": "#93000a", "on-secondary-fixed": "#00210c", "tertiary-container": "#dd2f36", "on-primary-fixed-variant": "#222fc2", "on-secondary-fixed-variant": "#005228", "on-tertiary-fixed-variant": "#930015", "surface-variant": "#343538", "on-background": "#e3e2e6", "on-error": "#690005", "tertiary-fixed": "#ffdad7", "surface-bright": "#38393c", "outline": "#8f8fa0", "tertiary": "#ffb3ae", "surface-container-low": "#1a1b1e", "surface-container-lowest": "#0d0e11", "secondary-fixed": "#83fba5", "on-primary": "#000da4", "on-error-container": "#ffdad6", "surface-container-high": "#292a2d", "on-secondary": "#003919", "on-tertiary-container": "#fffcff", "on-tertiary-fixed": "#410004", "error": "#ffb4ab", "on-surface-variant": "#c6c5d7", "surface-container": "#1f1f23", "primary-fixed-dim": "#bec2ff", "secondary-fixed-dim": "#66de8c", "on-surface": "#e3e2e6", "surface-container-highest": "#343538", "background": "#121316", "on-tertiary": "#68000c", "surface-tint": "#bec2ff", "surface-dim": "#121316", "primary": "#bec2ff", "primary-fixed": "#e0e0ff", "secondary": "#66de8c", "primary-container": "#5865f2" }, "fontFamily": { "section-header": [ "Hanken Grotesk" ], "headline-md": [ "Manrope" ], "body-md": [ "Hanken Grotesk" ], "headline-sm": [ "Manrope" ], "headline-xl": [ "Manrope" ], "headline-lg": [ "Manrope" ], "label-md": [ "Hanken Grotesk" ], "label-sm": [ "Hanken Grotesk" ], "body-sm": [ "Hanken Grotesk" ], "badge-status": [ "Hanken Grotesk" ], "body-lg": [ "Hanken Grotesk" ] } } } };</script>
 </head>
-<body>
-    <h1>Termos de Serviço</h1>
-    <p>Última atualização: Setembro de 2026</p>
-    
-    <h2>1. Aceitação dos Termos</h2>
-    <p>Ao acessar e usar este aplicativo, você aceita e concorda em cumprir estes termos e disposições.</p>
-    
-    <h2>2. Uso do Serviço</h2>
-    <p>O aplicativo é fornecido "no estado em que se encontra", destinado a facilitar a transmissão de tela e vídeo. O usuário é o único responsável pelo conteúdo que transmite.</p>
-    
-    <h2>3. Restrições</h2>
-    <p>Não é permitido utilizar o serviço para atividades ilícitas, abusivas ou que violem direitos de terceiros.</p>
-    
-    <h2>4. Limitação de Responsabilidade</h2>
-    <p>Não nos responsabilizamos por perdas de dados, interrupções do serviço ou eventuais danos causados pelo uso do aplicativo.</p>
-    
-    <h2>5. Modificações</h2>
-    <p>Estes termos podem ser atualizados a qualquer momento sem aviso prévio. O uso contínuo do serviço após as alterações constitui aceitação dos novos termos.</p>
+<body class="bg-surface font-body-md text-on-surface-variant py-10 px-6">
+    <div class="max-w-3xl mx-auto bg-surface-container-low p-8 rounded-xl shadow-md border border-surface-variant">
+        <h1 class="text-headline-xl font-headline-xl text-on-surface mb-2">Termos de Serviço</h1>
+        <p class="text-body-sm text-outline mb-8 uppercase tracking-wide">Última atualização: Setembro de 2026</p>
+        
+        <div class="flex flex-col gap-6">
+            <section>
+                <h2 class="text-headline-md font-headline-md text-primary mb-3">1. Aceitação dos Termos</h2>
+                <p class="text-body-md leading-relaxed">Ao acessar e usar este aplicativo, você aceita e concorda em cumprir estes termos e disposições.</p>
+            </section>
+            
+            <section>
+                <h2 class="text-headline-md font-headline-md text-primary mb-3">2. Uso do Serviço</h2>
+                <p class="text-body-md leading-relaxed">O aplicativo é fornecido "no estado em que se encontra", destinado a facilitar a transmissão de tela e vídeo. O usuário é o único responsável pelo conteúdo que transmite.</p>
+            </section>
+            
+            <section>
+                <h2 class="text-headline-md font-headline-md text-primary mb-3">3. Restrições</h2>
+                <p class="text-body-md leading-relaxed">Não é permitido utilizar o serviço para atividades ilícitas, abusivas ou que violem direitos de terceiros.</p>
+            </section>
+            
+            <section>
+                <h2 class="text-headline-md font-headline-md text-primary mb-3">4. Limitação de Responsabilidade</h2>
+                <p class="text-body-md leading-relaxed">Não nos responsabilizamos por perdas de dados, interrupções do serviço ou eventuais danos causados pelo uso do aplicativo.</p>
+            </section>
+            
+            <section>
+                <h2 class="text-headline-md font-headline-md text-primary mb-3">5. Modificações</h2>
+                <p class="text-body-md leading-relaxed">Estes termos podem ser atualizados a qualquer momento sem aviso prévio. O uso contínuo do serviço após as alterações constitui aceitação dos novos termos.</p>
+            </section>
+        </div>
+        
+        <div class="mt-10 pt-6 border-t border-surface-variant flex justify-center">
+            <a href="/share.html" class="text-label-md font-label-md text-primary hover:underline">Voltar para o estúdio</a>
+        </div>
+    </div>
 </body>
 </html>
